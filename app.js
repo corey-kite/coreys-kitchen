@@ -18,4 +18,30 @@ html+='</div><p class="source-note">From Corey’s Recipe Collection. Serving ch
 function updateFavoriteButton(){const b=$('#modal-favorite');if(b){b.textContent=saved.has(current.id)?'♥ Saved to favorites':'♡ Save to favorites';b.setAttribute('aria-pressed',saved.has(current.id));}}
 function closeRecipe(){if($('#recipe-dialog').open)$('#recipe-dialog').close();document.body.style.overflow='';current=null;if(location.hash.startsWith('#recipe-'))history.replaceState(null,'',location.pathname+location.search+'#recipes');}
 $('#close-dialog').onclick=closeRecipe;$('#recipe-dialog').addEventListener('cancel',e=>{e.preventDefault();closeRecipe();});$('#recipe-dialog').addEventListener('click',e=>{if(e.target===$('#recipe-dialog')){const b=e.target.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)closeRecipe();}});$('#search').oninput=e=>{query=e.target.value;render();};$('#sort').onchange=e=>{sort=e.target.value;render();};$('#favorites-filter').onclick=()=>{onlyFav=!onlyFav;render();};$('#nav-favorites').onclick=()=>{onlyFav=true;category='All recipes';query='';$('#search').value='';render();$('#recipes').scrollIntoView();};$('#reset').onclick=reset;$('#empty-reset').onclick=reset;document.addEventListener('keydown',e=>{if(e.key==='/'&&!$('#recipe-dialog').open&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();$('#search').focus();}});
-Promise.all([fetch('recipes.json?v=121').then(r=>{if(!r.ok)throw Error();return r.json();}),fetch('headings.json').then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([data,hs])=>{recipes=data;headings=new Set(hs);const cuisines=['All cuisines',...new Set(recipes.map(r=>cuisineById[r.id]))].sort((a,b)=>a==='All cuisines'?-1:b==='All cuisines'?1:a.localeCompare(b));$('#cuisine-filter').innerHTML=cuisines.map(c=>`<option>${esc(c)}</option>`).join('');$('#cuisine-filter').onchange=e=>{cuisine=e.target.value;render();};const cats=['All recipes',...new Set(recipes.map(r=>r.category))];$('#categories').innerHTML=cats.map(c=>`<button data-category="${esc(c)}" class="${c===category?'active':''}" aria-pressed="${c===category}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;render();});render();if(location.hash.startsWith('#recipe-'))openRecipe(location.hash.slice(1),true);}).catch(()=>{$('#result-count').textContent='The recipe box couldn’t load. Please refresh to try again.';$('#grid').innerHTML='<p>If this file was downloaded, serve the website through a web host rather than opening the HTML directly.</p>';});
+
+// Use one shared Pacific calendar day so visits and refreshes keep the same pick.
+function dailyRecipe(list, now=new Date()) {
+  const date=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+  const day=Math.floor(Date.parse(date+'T12:00:00Z')/86400000);
+  const hash=id=>{let h=2166136261;for(const c of id)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
+  const choices=list.filter(r=>r.category!=='Balanced Meal Planning').slice().sort((a,b)=>hash(a.id)-hash(b.id)||a.id.localeCompare(b.id));
+  return {recipe:choices.length?choices[((day%choices.length)+choices.length)%choices.length]:null,date};
+}
+let dailyTimer;
+function renderDaily(now=new Date()) {
+  clearTimeout(dailyTimer);
+  const {recipe:r,date}=dailyRecipe(recipes,now);
+  const feature=$('#daily-feature');if(!r){feature.hidden=true;return;}
+  feature.hidden=false;feature.dataset.date=date;feature.dataset.recipe=r.id;
+  $('#daily-title').textContent=r.title;
+  $('#daily-date').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',month:'long',day:'numeric',year:'numeric'}).format(now);
+  $('#daily-details').textContent=[cuisineById[r.id],r.category].filter(Boolean).join(' · ');
+  $('#daily-photo').innerHTML=art(r,recipes.indexOf(r));
+  const img=$('#daily-photo img');if(img){img.loading='eager';img.alt='Serving inspiration for '+r.title;}
+  const button=$('#daily-open');button.setAttribute('aria-label','Open today’s recipe: '+r.title);button.onclick=()=>openRecipe(r.id);
+  // Refresh an already-open page after midnight, without interrupting its recipe dialog.
+  dailyTimer=setTimeout(()=>renderDaily(),60000);
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&recipes.length)renderDaily();});
+
+Promise.all([fetch('recipes.json?v=121').then(r=>{if(!r.ok)throw Error();return r.json();}),fetch('headings.json').then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([data,hs])=>{recipes=data;headings=new Set(hs);renderDaily();const cuisines=['All cuisines',...new Set(recipes.map(r=>cuisineById[r.id]))].sort((a,b)=>a==='All cuisines'?-1:b==='All cuisines'?1:a.localeCompare(b));$('#cuisine-filter').innerHTML=cuisines.map(c=>`<option>${esc(c)}</option>`).join('');$('#cuisine-filter').onchange=e=>{cuisine=e.target.value;render();};const cats=['All recipes',...new Set(recipes.map(r=>r.category))];$('#categories').innerHTML=cats.map(c=>`<button data-category="${esc(c)}" class="${c===category?'active':''}" aria-pressed="${c===category}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;render();});render();if(location.hash.startsWith('#recipe-'))openRecipe(location.hash.slice(1),true);}).catch(()=>{$('#result-count').textContent='The recipe box couldn’t load. Please refresh to try again.';$('#grid').innerHTML='<p>If this file was downloaded, serve the website through a web host rather than opening the HTML directly.</p>';});

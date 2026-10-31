@@ -22,6 +22,9 @@ $('#close-dialog').onclick=closeRecipe;$('#recipe-dialog').addEventListener('can
 // Use one shared Pacific calendar day so visits and refreshes keep the same pick.
 function dailyRecipe(list, now=new Date()) {
   const date=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+  // Corey’s pick for October 31; the regular rotation resumes the next Pacific day.
+  const featured=date==='2026-10-31'?list.find(r=>r.id==='recipe-41'):null;
+  if(featured)return {recipe:featured,date};
   const day=Math.floor(Date.parse(date+'T12:00:00Z')/86400000);
   const hash=id=>{let h=2166136261;for(const c of id)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
   const choices=list.filter(r=>r.category!=='Balanced Meal Planning').slice().sort((a,b)=>hash(a.id)-hash(b.id)||a.id.localeCompare(b.id));

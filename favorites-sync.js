@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const PUBLIC = 'https://corey-kite.github.io/coreys-kitchen/';
   const CLOUD = 'https://coreys-kitchen.corey-r-kite.chatgpt.site/';
   const bridge = window.coreysFavoriteState;
   const validId = id => typeof id === 'string' && /^recipe-[1-9]\d{0,5}$/.test(id);
@@ -12,14 +13,39 @@
   const parse = value => { try { return JSON.parse(value); } catch { return null; } };
   const syncLink = document.getElementById('sync-favorites-link');
 
+
+  function copyWebsiteButton() {
+    const button=document.createElement('button');button.type='button';button.id='copy-public-link';button.className='copy-public-link';
+    button.textContent='Copy website link';button.setAttribute('aria-label','Copy public website link');
+    button.onclick=async()=>{
+      try {
+        await navigator.clipboard.writeText(PUBLIC);
+        button.textContent='Public link copied!';
+        if (typeof window.toast==='function') window.toast('Public homepage link copied. Ready to share.');
+        setTimeout(()=>{button.textContent='Copy website link';},3500);
+      } catch {
+        const dialog=document.createElement('dialog');dialog.className='favorites-import-dialog public-link-dialog';
+        const title=document.createElement('h2');title.textContent='Share Corey’s Kitchen';
+        const note=document.createElement('p');note.textContent='Copy this public homepage link for Facebook or a message. Visitors can browse recipes without signing in.';
+        const input=document.createElement('input');input.type='text';input.readOnly=true;input.value=PUBLIC;input.setAttribute('aria-label','Public website link');
+        const close=document.createElement('button');close.type='button';close.textContent='Close';close.onclick=()=>{dialog.close();dialog.remove();};
+        dialog.addEventListener('cancel',e=>{e.preventDefault();dialog.close();dialog.remove();});
+        dialog.append(title,note,input,close);document.body.append(dialog);dialog.showModal();input.select();
+      }
+    };
+    return button;
+  }
+
   if (!cloud?.enabled) {
     if (params.has('local')) { putStored(prefKey,null); params.delete('local'); history.replaceState(null,'',location.pathname+(params.size?'?'+params.toString():'')+location.hash); }
-    if (getStored(prefKey) === 'yes') { location.replace(CLOUD + location.hash); return; }
+    // A public visit must never navigate to the private sign-in area.
+    putStored(prefKey,null);
+    document.querySelector('header nav')?.append(copyWebsiteButton());
     if (syncLink) syncLink.addEventListener('click',() => {
       const url = new URL(CLOUD); url.searchParams.set('view','favorites');
       const ids = cleanIds(bridge?.getIds() ?? parse(getStored('coreys-favorites')));
       if (ids.length) url.searchParams.set('import',ids.join(','));
-      syncLink.href = url.toString(); putStored(prefKey,'yes');
+      syncLink.href = url.toString();
     });
     return;
   }
@@ -31,6 +57,7 @@
   const status = document.createElement('span'); status.setAttribute('role','status'); status.setAttribute('aria-live','polite'); status.textContent = 'Connecting your favorites…';
   label.append(heading,status); bar.append(label);
   const actions = document.createElement('div'); actions.className = 'favorites-sync-actions'; bar.append(actions);
+  actions.append(copyWebsiteButton());
   document.querySelector('header')?.after(bar);
   if (syncLink) { syncLink.textContent = 'Public recipe box ↗'; syncLink.href = cloud.publicUrl+'?local=1'; }
   const link = (text,href) => { const a=document.createElement('a');a.textContent=text;a.href=href;a.target='_top';return a; };

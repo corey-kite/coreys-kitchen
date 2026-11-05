@@ -19,22 +19,27 @@ function updateFavoriteButton(){const b=$('#modal-favorite');if(b){b.textContent
 function closeRecipe(){if($('#recipe-dialog').open)$('#recipe-dialog').close();document.body.style.overflow='';current=null;if(location.hash.startsWith('#recipe-'))history.replaceState(null,'',location.pathname+location.search+'#recipes');}
 $('#close-dialog').onclick=closeRecipe;$('#recipe-dialog').addEventListener('cancel',e=>{e.preventDefault();closeRecipe();});$('#recipe-dialog').addEventListener('click',e=>{if(e.target===$('#recipe-dialog')){const b=e.target.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)closeRecipe();}});$('#search').oninput=e=>{query=e.target.value;render();};$('#sort').onchange=e=>{sort=e.target.value;render();};$('#favorites-filter').onclick=()=>{onlyFav=!onlyFav;render();};$('#nav-favorites').onclick=()=>{onlyFav=true;category='All recipes';query='';$('#search').value='';render();$('#recipes').scrollIntoView();};$('#reset').onclick=reset;$('#empty-reset').onclick=reset;document.addEventListener('keydown',e=>{if(e.key==='/'&&!$('#recipe-dialog').open&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();$('#search').focus();}});
 
-// Use one shared Pacific calendar day so visits and refreshes keep the same pick.
+// A fixed rotation keeps collection additions from changing an existing day's pick.
+// Extend this schedule only at the end of a completed rotation.
+const dailyRecipeIds=Array.from({length:131},(_,i)=>'recipe-'+(i+8));
+const dailyHash=id=>{let h=2166136261;for(const c of id)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
+dailyRecipeIds.sort((a,b)=>dailyHash(a)-dailyHash(b)||a.localeCompare(b));
 function dailyRecipe(list, now=new Date()) {
-  const date=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
-  // Corey’s pick for October 31; the regular rotation resumes the next Pacific day.
-  const featured=date==='2026-10-31'?list.find(r=>r.id==='recipe-41'):null;
-  if(featured)return {recipe:featured,date};
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+  const part=type=>parts.find(p=>p.type===type).value;
+  const date=part('year')+'-'+part('month')+'-'+part('day');
   const day=Math.floor(Date.parse(date+'T12:00:00Z')/86400000);
-  const hash=id=>{let h=2166136261;for(const c of id)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
-  const choices=list.filter(r=>r.category!=='Balanced Meal Planning').slice().sort((a,b)=>hash(a.id)-hash(b.id)||a.id.localeCompare(b.id));
-  return {recipe:choices.length?choices[((day%choices.length)+choices.length)%choices.length]:null,date};
+  const id=dailyRecipeIds[((day%dailyRecipeIds.length)+dailyRecipeIds.length)%dailyRecipeIds.length];
+  return {recipe:list.find(r=>r.id===id)||null,date};
 }
 let dailyTimer;
 function renderDaily(now=new Date()) {
   clearTimeout(dailyTimer);
   const {recipe:r,date}=dailyRecipe(recipes,now);
-  const feature=$('#daily-feature');if(!r){feature.hidden=true;return;}
+  const feature=$('#daily-feature');
+  dailyTimer=setTimeout(()=>renderDaily(),60000);
+  if(feature.dataset.date===date&&feature.dataset.recipe===r?.id)return;
+  if(!r){feature.hidden=true;return;}
   feature.hidden=false;feature.dataset.date=date;feature.dataset.recipe=r.id;
   $('#daily-title').textContent=r.title;
   $('#daily-date').textContent=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',month:'long',day:'numeric',year:'numeric'}).format(now);
@@ -43,7 +48,6 @@ function renderDaily(now=new Date()) {
   const img=$('#daily-photo img');if(img){img.loading='eager';img.alt='Serving inspiration for '+r.title;}
   const button=$('#daily-open');button.setAttribute('aria-label','Open today’s recipe: '+r.title);button.onclick=()=>openRecipe(r.id);
   // Refresh an already-open page after midnight, without interrupting its recipe dialog.
-  dailyTimer=setTimeout(()=>renderDaily(),60000);
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&recipes.length)renderDaily();});
 

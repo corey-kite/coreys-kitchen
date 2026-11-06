@@ -1,3 +1,48 @@
+const creamerUpdates = {
+  "recipe-122": {
+    "1/4 teaspoon butter extract": [
+      "1/4 teaspoon butter extract",
+      "1 tablespoon granulated sugar"
+    ],
+    "Whisk in the vanilla and butter extracts until evenly combined.": "Whisk in the sugar until dissolved, then stir in the vanilla and butter extracts."
+  },
+  "recipe-123": {
+    "1/2 cup milk": "1/4 cup milk",
+    "2 teaspoons vanilla extract": "1 tablespoon vanilla extract",
+    "Whisk in the additional 1/2 cup milk, vanilla, and almond extract.": "Whisk in the additional 1/4 cup milk, vanilla, and almond extract."
+  },
+  "recipe-124": {
+    "3 tablespoons maple syrup": "4 tablespoons maple syrup"
+  },
+  "recipe-125": {
+    "1/2 teaspoon butter extract": [
+      "1/2 teaspoon butter extract",
+      "1 tablespoon packed light brown sugar"
+    ],
+    "Mix the cinnamon with the vanilla and a small spoonful of the milk base to form a smooth paste, then whisk it back into the jug. Whisk in the remaining flavor ingredients.": "Whisk the brown sugar into the milk base until dissolved. Mix the cinnamon with the vanilla and a spoonful of the milk base to make a smooth paste, then whisk it back into the jug with the butter extract."
+  }
+};
+
+function updateCreamer(recipe) {
+  const updates = creamerUpdates[recipe.id];
+  if (!updates) return recipe;
+
+  const updateLines = lines => lines.flatMap(line => {
+    if (recipe.id === "recipe-123") {
+      line = line.replace("3 1/4 cups (about 26 servings)", "3 cups (about 24 servings)");
+    }
+    return updates[line] ?? line;
+  });
+
+  return {
+    ...recipe,
+    lines: updateLines(recipe.lines),
+    versions: Object.fromEntries(Object.entries(recipe.versions).map(
+      ([servings, lines]) => [servings, updateLines(lines)]
+    )),
+  };
+}
+
 const cremaEnchiladas = {
   "id": "recipe-140",
   "title": "Creamy Ground Beef and Mexican Crema Enchiladas",
@@ -213,5 +258,5 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&recipes.l
 // The account sync layer may replace the visible set without emitting a new save.
 window.coreysFavoriteState={key:favoriteStorageKey,ready:()=>recipes.length>0,getIds:()=>[...saved],replace(ids){saved=new Set(ids.filter(id=>typeof id==='string'&&/^recipe-[1-9]\d{0,5}$/.test(id)));try{localStorage.setItem(favoriteStorageKey,JSON.stringify([...saved]));}catch{}if(recipes.length)render();if(current)updateFavoriteButton();},showFavorites(){reset();onlyFav=true;render();$('#recipes').scrollIntoView();}};
 window.addEventListener('storage',e=>{if(!window.coreysCloud?.userId&&e.key===favoriteStorageKey){try{const ids=JSON.parse(e.newValue||'[]');if(Array.isArray(ids))window.coreysFavoriteState.replace(ids);}catch{}}});
-Promise.all([fetch('recipes.json?v=rice-sauce').then(r=>{if(!r.ok)throw Error();return r.json();}),fetch('headings.json').then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([data,hs])=>{recipes=data.slice();const pieTinIndex=recipes.findIndex(recipe=>recipe.id==='recipe-108');recipes.splice(pieTinIndex<0?recipes.length:pieTinIndex+1,0,cremaEnchiladas);headings=new Set(hs);renderDaily();const cuisines=['All cuisines',...new Set(recipes.map(r=>(cuisineById[r.id] || 'General & Everyday')))].sort((a,b)=>a==='All cuisines'?-1:b==='All cuisines'?1:a.localeCompare(b));$('#cuisine-filter').innerHTML=cuisines.map(c=>`<option>${esc(c)}</option>`).join('');$('#cuisine-filter').onchange=e=>{cuisine=e.target.value;render();};const cats=['All recipes',...new Set(recipes.map(r=>r.category))];$('#categories').innerHTML=cats.map(c=>`<button data-category="${esc(c)}" class="${c===category?'active':''}" aria-pressed="${c===category}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;render();});render();window.dispatchEvent(new Event('coreys:ready'));if(location.hash.startsWith('#recipe-'))openRecipe(location.hash.slice(1),true);}).catch(()=>{$('#result-count').textContent='The recipe box couldn’t load. Please refresh to try again.';$('#grid').innerHTML='<p>If this file was downloaded, serve the website through a web host rather than opening the HTML directly.</p>';});
+Promise.all([fetch('recipes.json?v=rice-sauce').then(r=>{if(!r.ok)throw Error();return r.json();}),fetch('headings.json').then(r=>{if(!r.ok)throw Error();return r.json();})]).then(([data,hs])=>{recipes=data.map(updateCreamer);const pieTinIndex=recipes.findIndex(recipe=>recipe.id==='recipe-108');recipes.splice(pieTinIndex<0?recipes.length:pieTinIndex+1,0,cremaEnchiladas);headings=new Set(hs);renderDaily();const cuisines=['All cuisines',...new Set(recipes.map(r=>(cuisineById[r.id] || 'General & Everyday')))].sort((a,b)=>a==='All cuisines'?-1:b==='All cuisines'?1:a.localeCompare(b));$('#cuisine-filter').innerHTML=cuisines.map(c=>`<option>${esc(c)}</option>`).join('');$('#cuisine-filter').onchange=e=>{cuisine=e.target.value;render();};const cats=['All recipes',...new Set(recipes.map(r=>r.category))];$('#categories').innerHTML=cats.map(c=>`<button data-category="${esc(c)}" class="${c===category?'active':''}" aria-pressed="${c===category}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;render();});render();window.dispatchEvent(new Event('coreys:ready'));if(location.hash.startsWith('#recipe-'))openRecipe(location.hash.slice(1),true);}).catch(()=>{$('#result-count').textContent='The recipe box couldn’t load. Please refresh to try again.';$('#grid').innerHTML='<p>If this file was downloaded, serve the website through a web host rather than opening the HTML directly.</p>';});
 async function shareRecipe(recipe){const url='https://corey-kite.github.io/coreys-kitchen/#'+recipe.id;try{await navigator.clipboard.writeText(url);toast('Recipe link copied');}catch{window.prompt('Copy this public recipe link:',url);}}

@@ -3,17 +3,23 @@ const masaCornChips = {
   "title": "Homemade Corn Chips from Scratch (Masa Harina Method)",
   "category": "Snacks & Potato Sides",
   "lines": [
-    "Practical batch recipe | Serves 4 | Prep: 15 minutes | Fry: about 2–3 minutes total, depending on batch size",
+    "Practical batch recipe | Serves 4 | Prep: 15 minutes | Oil fry: about 2–3 minutes total | Air fry: 5–7 minutes per batch, plus par-cooking",
     "Ingredients",
     "1 cup masa harina",
     "3/4 cup hot water",
     "2 tablespoons vegetable or canola oil, plus more for frying",
     "1 teaspoon salt, plus more for seasoning",
+    "Oil spray, for the air fryer method",
     "Directions",
     "Mix the masa harina, hot water, 2 tablespoons oil, and 1 teaspoon salt. When the dough is cool enough to handle, knead until soft and pliable.",
+    "Method 1 — Fry in oil",
     "Roll the dough between two sheets of parchment paper until about 1/8 inch thick. Peel away the top sheet and cut small rectangles or triangles with a knife or pizza cutter.",
     "Heat the frying oil in a heavy pan to 350°F (177°C). Lift the pieces from the parchment and fry in small batches for about 30–40 seconds, until crisp. Let the oil return to temperature between batches.",
-    "Lift out with a slotted spoon, drain on a paper towel-lined rack, and sprinkle with salt while hot."
+    "Lift out with a slotted spoon, drain on a paper towel-lined rack, and sprinkle with salt while hot.",
+    "Method 2 — Air fry from scratch",
+    "Roll the same masa dough into thin tortillas. Cook on a dry skillet or comal for about 30 seconds per side, just until the dough sets. This helps keep the chips from cracking or turning gummy.",
+    "Cool slightly, cut into triangles, and spray both sides with oil.",
+    "Arrange in a single layer in the air fryer basket. Air fry at 375°F (190°C) for 5–7 minutes, shaking halfway through, until rigid and crunchy. Work in batches if needed. Season while hot, if desired."
   ]
 };
 masaCornChips.versions = Object.fromEntries([1, 2, 3, 4, 5].map(servings => [servings, masaCornChips.lines]));

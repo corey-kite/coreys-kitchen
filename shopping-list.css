@@ -2,3 +2,17 @@
 nav a[href="#shopping-list"]{display:inline-flex!important;align-items:center;min-height:44px;padding:8px 12px;border:1px solid #a7b9ac;border-radius:24px;font-size:14px;white-space:nowrap}@media(max-width:700px){header{flex-wrap:wrap}header nav{flex-wrap:wrap;gap:10px}}
 
 .sl-buy-hint,.sl-amount{display:block;font-weight:400;font-size:15px;line-height:1.5;margin-top:5px}.sl-buy-hint{color:#3d5947}.sl-amount{color:#5a675e}.sl-group li>label strong{font-size:19px}.ingredient-add{display:block;margin:5px 0 12px 26px;padding:8px 14px;min-height:40px;border:1px solid #24503a;background:#edf4ef;color:#193d2a;border-radius:8px;font:600 14px system-ui;cursor:pointer}.ingredient-add:focus-visible{outline:3px solid #b87515;outline-offset:2px}@media print{.ingredient-add,#recipe-shopping-open{display:none!important}}
+
+/* Keep only a short entry point on the kitchen dashboard. */
+#shopping-list[hidden]{display:none!important}
+body[data-shopping-view]>:not(#shopping-list):not(#mp-print-view){display:none!important}
+body[data-shopping-view]{background:#f2f6f3}
+body[data-shopping-view]>#shopping-list{min-height:100vh;margin:0 auto;border:0;border-radius:0}
+.sl-back{display:block;width:fit-content;margin:0 0 24px;color:#24503a;padding:10px 0;font-weight:650;min-height:44px}
+.sl-shortcut{max-width:1280px;margin:32px auto;padding:24px 30px;border:1px solid #ccd7ce;border-radius:18px;background:white;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.sl-shortcut h2{margin:0 0 8px;font-size:26px;color:#193d2a}.sl-shortcut p{margin:0;line-height:1.5;color:#53645a}
+.sl-open-button{background:#24503a;color:white;padding:14px 20px;min-height:48px;border-radius:10px;text-decoration:none;text-align:center;font-weight:650;white-space:nowrap}
+.sl-open-button:focus-visible,.sl-back:focus-visible{outline:3px solid #b87515;outline-offset:3px}
+.mp-ingredient-review{margin:20px 0}.mp-ingredient-review>summary{cursor:pointer;font-weight:650;min-height:44px;padding:12px;color:#24503a;border:1px solid #ccd7ce;border-radius:8px}
+@media(max-width:700px){.sl-shortcut{margin:24px 12px;padding:22px;align-items:stretch;flex-direction:column}.sl-open-button{white-space:normal}}
+@media print{.sl-back{display:none!important}}

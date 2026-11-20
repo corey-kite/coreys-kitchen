@@ -11,7 +11,7 @@ const units='(?:fluid ounces?|fl\\.? oz\\.?|tablespoons?|teaspoons?|tbsp\\.?|tsp
 const mods='(?:(?:large|small|medium|whole|dried|beaten|packed|rounded|generous|skinless|boneless|chicken|corn|fresh|sweet|red|green|grape|bay|cinnamon)\\s+){0,4}';
 const endHeading=/^(directions|instructions|method|steps|notes|source|sources|tips|equipment|nutrition|storage)\s*:?$/i;
 function bounds(lines){let a=lines.findIndex(s=>/^ingredients\s*:?$/i.test(s));if(a<0){if(/^Yield: (?:1 full day|3 breakfast choices)/.test(lines[0]||'')){const b=lines.findIndex(s=>/^(Planning Note|Breakfast Notes)$/.test(s));return[1,b<0?lines.length:b];}return[-1,-1];}let b=lines.findIndex((s,i)=>i>a&&endHeading.test(s));return[a+1,b<0?lines.length:b];}
-function scaleIngredient(raw,f){if(f===1)return raw;let s=normalize(raw).replace(/\bOne\b/g,'1').replace(/\bTwo\b/g,'2');const held=[];const keep=t=>`⟦${held.push(t)-1}⟧`;
+function scaleIngredient(raw,f){if(f===1||/\b(?:zip.top bag|parchment paper|aluminum foil|thermometer)\b/i.test(raw))return raw;let s=normalize(raw).replace(/\bOne\b/g,'1').replace(/\bTwo\b/g,'2');const held=[];const keep=t=>`⟦${held.push(t)-1}⟧`;
 // Container sizes and fat percentages describe products; they are not ingredient quantities.
 s=s.replace(/(\b(?:cans?|bottles?|cartons?|packages?|packets?)\s*)(\([^)]*\))/gi,(_,p,t)=>p+keep(t));
 s=s.replace(/\([^)]*\)/g,t=>/\b(?:original|per original batch)\b/i.test(t)?'':(/^\(\s*\d+(?:\.\d+)?\s*[-–]\s*(?:ounce|oz|pound|lb|gram|g|fluid)/i.test(t)||/\b(?:net weight|can size|package size|carton|bottle|pack)\b/i.test(t))?keep(t):t);

@@ -13,18 +13,18 @@ function pdf(text){
  return new Blob([output],{type:'application/pdf'});
 }
 window.coreysPlannerPdf=pdf;
-window.coreysPrintPlanner=(text,week)=>{
+window.coreysPrintPlanner=(text,week,options={})=>{
  document.getElementById('mp-print-view')?.remove();
- const panel=document.createElement('section');panel.id='mp-print-view';panel.setAttribute('aria-label','Printable meal planner');
+ const panel=document.createElement('section');panel.id='mp-print-view';panel.setAttribute('aria-label',options.title||'Printable meal planner');
  const toolbar=document.createElement('div');toolbar.className='mp-print-tools';
- const back=document.createElement('button');back.type='button';back.textContent='Back to planner';
+ const back=document.createElement('button');back.type='button';back.textContent=options.backLabel||'Back to planner';
  const print=document.createElement('button');print.type='button';print.textContent='Print / Save as PDF';
- const download=document.createElement('a');download.textContent='Download PDF';download.download=`Coreys-Kitchen-Planner-${week}.pdf`;const url=URL.createObjectURL(pdf(text));download.href=url;
+ const download=document.createElement('a');download.textContent='Download PDF';download.download=options.filename||`Coreys-Kitchen-Planner-${week}.pdf`;const url=URL.createObjectURL(pdf(text));download.href=url;
  const help=document.createElement('p');help.textContent='If printing does not open in your phone app, tap Download PDF. Open the downloaded file to print or share it.';
  const content=document.createElement('pre');content.textContent=text;
  toolbar.append(back,print,download,help);panel.append(toolbar,content);document.body.append(panel);
  const previousY=window.scrollY;document.body.dataset.plannerPreview='true';window.scrollTo(0,0);
- back.onclick=()=>{delete document.body.dataset.plannerPreview;panel.remove();URL.revokeObjectURL(url);window.scrollTo(0,previousY);document.getElementById('mp-print')?.focus({preventScroll:true});};
+ back.onclick=()=>{delete document.body.dataset.plannerPreview;panel.remove();URL.revokeObjectURL(url);window.scrollTo(0,previousY);document.getElementById(options.returnFocus||'mp-print')?.focus({preventScroll:true});};
  print.onclick=()=>{try{window.print();}catch{help.textContent='Printing is unavailable here. Tap Download PDF, then open the file to print or share it.';}};
  back.focus();
 };

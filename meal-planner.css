@@ -48,3 +48,21 @@ body[data-planner-preview]>:not(#mp-print-view){display:none!important}
 .mp-day:nth-child(7n) .mp-day-editor[open],.mp-day:nth-child(7n - 1) .mp-day-editor[open]{left:auto;right:4px}
 .mp-range{font:1.8rem var(--serif);margin:0 0 16px}.mp-toolbar{margin:16px 0}
 @media(max-width:700px){.mp-calendar-scroll{margin-right:-8px}.meal-planner .mp-days{min-width:700px}.meal-planner .mp-day{min-height:115px}}
+
+/* The calendar gets its own calm, spacious view. */
+body .meal-planner{max-width:1400px;margin:24px auto 40px;padding:30px;border:1px solid #d8e2d9;border-radius:24px;background:#fff;box-shadow:0 10px 40px #204c3b08}
+.meal-planner .mp-intro{max-width:none}.meal-planner h2{font-size:clamp(2rem,3vw,3rem);margin:8px 0 10px}.mp-intro>p{color:#5b6e61;max-width:690px;line-height:1.6}
+.mp-monthbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin:20px 0}.meal-planner .mp-range{font:2rem var(--serif);margin:0;color:#204c3b}.mp-monthbar .mp-toolbar{margin:0;align-items:center;gap:8px}.mp-toolbar label{font-size:.875rem;color:#53665a}
+.meal-planner .mp-toolbar button{padding:10px 15px;min-height:44px;border:1px solid #d0ddd3;background:#f3f7f2;color:#204c3b;border-radius:24px;font-size:.94rem}.meal-planner #mp-today{background:#204c3b;color:#fff;border-color:#204c3b}
+.meal-planner .mp-days{border-color:#dce5de;border-radius:14px;background:#fff;overflow:hidden}
+.mp-weekday{background:#204c3b;color:#fff;letter-spacing:.07em;text-transform:uppercase;padding:15px 4px;font-size:.8rem}
+.meal-planner .mp-day{min-height:150px;padding:12px 10px;background:#fff;border-color:#e3eae4}.mp-day-top{justify-content:flex-end;margin-bottom:12px}.mp-day h3{font-weight:650}.mp-day time{width:30px;height:30px;font-size:.94rem}.mp-today-label{display:none}
+.meal-planner .mp-today{background:#f3f8ef;box-shadow:inset 0 0 0 2px #6b884c}.mp-today time{background:#204c3b}
+.mp-meal-label{display:block;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#69806e;margin:0 0 5px}
+.mp-recipe-link{font-size:.875rem;padding:8px 9px;line-height:1.45;border-left:3px solid #6e8954;border-radius:3px 7px 7px 3px;background:#edf3e6;color:#284631}
+.mp-tone-1 .mp-recipe-link{background:#f8eee0;border-color:#bd8a42;color:#714f24}.mp-tone-2 .mp-recipe-link{background:#e9f1f5;border-color:#668a9c;color:#315768}.mp-tone-3 .mp-recipe-link{background:#f2eaf2;border-color:#a27da0;color:#654962}
+.mp-day-editor summary{font-size:.8rem;color:#687d6d;font-weight:500;padding-top:8px}.mp-day-editor[open]{position:relative;top:0;left:0!important;right:auto!important;width:auto;max-width:none;box-shadow:none;padding:8px;border-color:#b4c6b8}.mp-day:has(.mp-day-editor[open]){background:#f4f7f2}
+.meal-planner .mp-outside{background:#f7f9f6}.mp-outside .mp-recipe-link{opacity:.68}
+.mp-tools{border-top:1px solid #dde5df;padding-top:14px;margin-top:22px}.mp-tools>summary{font-size:.94rem}.mp-status{line-height:1.5}
+@media(max-width:900px){body .meal-planner{margin:18px;padding:22px}.mp-monthbar{align-items:flex-start;flex-direction:column}.meal-planner .mp-days{min-width:850px}}
+@media(max-width:580px){body .meal-planner{margin:14px 10px;padding:20px 14px}.mp-monthbar .mp-toolbar>*{flex:0 0 auto}.mp-monthbar .mp-toolbar label{flex-basis:100%}.mp-calendar-scroll{margin-right:-8px}.mp-intro>p{font-size:.94rem}.meal-planner .mp-range{font-size:1.6rem}}

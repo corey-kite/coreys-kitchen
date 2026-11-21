@@ -13,3 +13,17 @@ body[data-planner-preview]>:not(#mp-print-view){display:none!important}
  #mp-print-view .mp-print-tools{display:none!important}
  #mp-print-view pre{font-size:10pt;line-height:1.4}
 }
+
+/* A compact calendar; editing and shopping tools open on demand. */
+.meal-planner{padding:24px}.meal-planner h2{font-size:clamp(1.75rem,3vw,2.4rem)}
+.mp-days{grid-template-columns:repeat(7,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mp-day{border:0;border-right:1px solid var(--line);border-radius:0;padding:14px;min-height:175px}
+.mp-day:last-child{border-right:0}.mp-day h3{font-size:1rem;line-height:1.5}
+.mp-recipe-link{display:block;color:var(--green);font-weight:700;text-decoration:underline;line-height:1.5;overflow-wrap:anywhere}
+.mp-empty-day,.mp-day-note{font-size:.875rem!important;line-height:1.5}.mp-day-note{color:#526151}
+.mp-day-editor{margin-top:14px}.mp-day-editor summary,.mp-tools>summary{cursor:pointer;color:var(--green);font-size:.875rem;font-weight:650;padding:8px 0}
+.mp-tools{margin-top:16px}.mp-day-editor[open]{min-width:0}.mp-day-editor .mp-yield{min-height:0}
+.mp-recipe-link:focus-visible,summary:focus-visible{outline:3px solid var(--green);outline-offset:4px}
+@media(max-width:1100px){.mp-days{grid-template-columns:repeat(4,minmax(0,1fr))}.mp-day{border-bottom:1px solid var(--line)}}
+@media(max-width:700px){.mp-days{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.mp-days{grid-template-columns:1fr}}

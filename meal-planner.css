@@ -29,3 +29,22 @@ body[data-planner-preview]>:not(#mp-print-view){display:none!important}
 @media(max-width:380px){.mp-days{grid-template-columns:1fr}}
 
 .mp-day{border-bottom:1px solid var(--line)}.mp-today{background:#e6efe3;box-shadow:inset 0 3px var(--green)}.mp-today-label{display:block;color:var(--green);font-size:.875rem;font-weight:750}.mp-range{font-weight:650;color:var(--green);margin:0 0 14px}
+
+/* Month calendar: seven weekday columns, with meal links inside each date. */
+.mp-calendar-scroll{overflow-x:auto;padding-bottom:8px}
+.meal-planner .mp-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:770px;gap:0;border:1px solid var(--line);border-radius:12px;overflow:visible}
+.mp-weekday{text-align:center;padding:12px 4px;font-size:.875rem;font-weight:700;color:var(--green);background:#edf3ed;border-bottom:1px solid var(--line)}
+.meal-planner .mp-day{position:relative;min-height:125px;padding:10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:white}
+.meal-planner .mp-day:nth-child(7n){border-right:0}
+.mp-day-top{justify-content:center;margin-bottom:8px}.mp-day h3{font-family:inherit;font-weight:500;text-align:center}
+.mp-day time{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px}
+.meal-planner .mp-today{background:#f2f8f0;box-shadow:none}.mp-today time{border-radius:50%;background:var(--green);color:white}
+.mp-today-label{font-size:.75rem}.meal-planner .mp-outside{background:#f5f6f4;color:#687369}
+.mp-recipe-link{padding:5px 7px;border-radius:5px;background:#e4efe2;color:#204c3b;font-size:.875rem;line-height:1.35;font-weight:650;text-decoration:none}
+.mp-recipe-link:hover{text-decoration:underline;background:#d4e6d0}
+.mp-day .mp-empty-day{font-size:.875rem!important;color:#687369;margin:4px 0}
+.mp-day-note{display:none}.mp-day-editor{margin-top:4px}.mp-day-editor summary{font-size:.875rem;padding:5px 0}
+.mp-day-editor[open]{position:absolute;left:4px;top:44px;z-index:5;width:280px;max-width:calc(100vw - 55px);padding:12px;background:white;border:1px solid var(--green);border-radius:8px;box-shadow:0 8px 28px #0003}
+.mp-day:nth-child(7n) .mp-day-editor[open],.mp-day:nth-child(7n - 1) .mp-day-editor[open]{left:auto;right:4px}
+.mp-range{font:1.8rem var(--serif);margin:0 0 16px}.mp-toolbar{margin:16px 0}
+@media(max-width:700px){.mp-calendar-scroll{margin-right:-8px}.meal-planner .mp-days{min-width:700px}.meal-planner .mp-day{min-height:115px}}

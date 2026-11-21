@@ -19,7 +19,7 @@ if(saved?.version===2&&saved.calendar&&typeof saved.calendar==='object'){
 }else defaults.forEach((id,i)=>s.calendar[dateAt(start,i)]=cleanDay({id,portion:'original'}));
 return s;
 }
-function view(s){return {days:Array.from({length:7},(_,i)=>cleanDay(s.calendar[dateAt(s.week,i)])),extras:s.extraWeeks[s.week]||''};}
+function view(s,count=7){return {days:Array.from({length:count},(_,i)=>cleanDay(s.calendar[dateAt(s.week,i)])),extras:s.extraWeeks[s.week]||''};}
 function stash(s,days,extras){days.forEach((d,i)=>s.calendar[dateAt(s.week,i)]=cleanDay(d));s.extraWeeks[s.week]=extras;}
 function snapshot(s){return {version:2,week:s.week,calendar:s.calendar,checked:s.checked,extraWeeks:s.extraWeeks};}
 window.coreysCalendar={validDate,dateAt,create,view,stash,snapshot};
